@@ -35,10 +35,13 @@ interface SDSContext {
   azureAuthorizationToken: string;
   audioCtx: any;
 
-  title: any;
-  day: any;
-  type: any;
-  hour: any;
+type: any;
+hour: any;
+day: any;
+binary_yes: any;
+binary_no: any;
+create_meeting: any;
+
 }
 
 type SDSEvent =
