@@ -57,23 +57,23 @@ const grammar: Grammar = {
   },
   "on tuesday": {
     intent: "None",
-    entities: { day: "Friday" },
+    entities: { day: "Tuesday" },
   },
   "on wednesday": {
     intent: "None",
-    entities: { day: "Friday" },
+    entities: { day: "Wednesday" },
   },
   "on thursday": {
     intent: "None",
-    entities: { day: "Friday" },
+    entities: { day: "Thursday" },
   },
   "on saturday": {
     intent: "None",
-    entities: { day: "Friday" },
+    entities: { day: "Saturday" },
   },
   "on sunday": {
     intent: "None",
-    entities: { day: "Friday" },
+    entities: { day: "Sunday" },
   },
   "at 9": {
     intent: "None",
@@ -159,6 +159,22 @@ const grammar: Grammar = {
     intent: "None",
     entities: {type: "meeting with Zac Efron"}
   },
+  "ask a celebrity question" : {
+    intent: "None",
+    entities: {type: "meeting with Zac Efron"}
+  },
+  "meeting with Zac Efron" : {
+    intent: "None",
+    entities: {type: "meeting with Zac Efron"}
+  },
+  "meeting with Ashley Tisdale" : {
+    intent: "None",
+    entities: {type: "meeting with Ashley Tisdale"},
+  },
+  "meeting with Vanessa Hudgens" : {
+    intent: "None",
+    entities: {type: "meeting with Vanessa Hudgens"},
+  },
 };
 
 const getEntity = (context: SDSContext, entity: string) => {
@@ -212,7 +228,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
       },
       states: {
         prompt: {
-          entry: say("Hi Anika. Would you like to create a meeting or ask a who-is question?"),
+          entry: say("Hi Anika. Would you like to create a meeting or ask a celebrity question? Answer either: create a meeting - or - ask a celebrity question."),
           on: { ENDSPEECH: "ask" },
         },
         ask: {
@@ -267,18 +283,77 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         on: { ENDSPEECH: "date_info" },
       },
     celebrity_info: {
-        entry: send((context) => ({
-          type: "SPEAK",
-          value: `Zac Efron is an actor.`,
-        })),
-        on: { ENDSPEECH: "want_meet" },
-      },
-    want_meet: {
+        id:"celebrity_info",
         initial: "prompt",
         on: {
           RECOGNISED: [
             {
-              target: "date_info",
+              target: ".information",
+              actions: assign({type:
+                context => {return context.recResult[0].utterance},
+              }),
+            },
+            {
+              target: ".nomatch",
+            },
+          ],
+          TIMEOUT: ".prompt",
+        },
+        states: {
+          information: {
+            invoke: {
+              id: 'getInformation',
+              src: (context, event) => kbRequest(context.type),
+              onDone: [{
+                target: 'success',
+                cond: (context, event) => event.data.Abstract !== "",
+                actions: assign({ information: (context, event) => event.data })
+              },
+              {
+                target: 'failure',
+              },
+            ],
+              onError: {
+                target: 'failure',
+              }
+            }
+          },
+          success: {
+            entry: send((context) => ({
+              type: "SPEAK",
+              value: `Here's what I found: ${context.information.Abstract}`
+            })),
+            on: {ENDSPEECH: "#want_meet"},
+          },
+          failure: {
+            entry: send((context) => ({
+              type: "SPEAK",
+              value: `Sorry, I don't know who that is. Tell me something I know.`
+            })),
+            on: {ENDSPEECH: "ask"},
+          },
+          prompt: {
+            entry: say("What celebrity do you have in mind?"),
+            on: { ENDSPEECH: "ask" },
+          },
+          ask: {
+            entry: send("LISTEN"),
+          },
+          nomatch: {
+            entry: say(
+              "Sorry, I don't know what it is. Tell me something I know."
+            ),
+            on: { ENDSPEECH: "ask" },
+          },
+        },
+      },
+    want_meet: {
+      id:"want_meet",  
+      initial: "prompt",
+        on: {
+          RECOGNISED: [
+            {
+              target: "assign_meeting_title",
               cond: (context) => !!getEntity(context, "binary_yes"),
               actions: assign({
                 title: (context) => getEntity(context, "binary_yes"),
@@ -312,6 +387,13 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
             on: { ENDSPEECH: "ask" },
           },
         },
+      },
+    assign_meeting_title: {
+      entry: [
+        say("Okay."),
+        assign((context) => ({type: `meeting with ${context.type}`}))
+      ],
+      on: { ENDSPEECH: "date_info" },
       },
     date_info: {
       initial: "prompt",
