@@ -41,6 +41,8 @@ day: any;
 binary_yes: any;
 binary_no: any;
 create_meeting: any;
+information: any;
+title: any;
 
 }
 
