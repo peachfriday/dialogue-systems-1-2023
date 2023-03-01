@@ -5,187 +5,18 @@ function say(text: string): Action<SDSContext, SDSEvent> {
   return send((_context: SDSContext) => ({ type: "SPEAK", value: text }));
 }
 
-interface Grammar {
-  [index: string]: {
-    intent: string;
-    entities: {
-      [index: string]: string;
-    };
-  };
-}
-
-const grammar: Grammar = {
-  lecture: {
-    intent: "None",
-    entities: { type: "Dialogue systems lecture" },
-  },
-  lunch: {
-    intent: "None",
-    entities: { type: "Lunch at the canteen" },
-  },
-  hairdressers: {
-    intent: "None",
-    entities: { type: "Haircut at the hairdressers" },
-  },
-  doctor: {
-    intent: "None",
-    entities: { type: "doctor's appointment" },
-  },
-  nails: {
-    intent: "None",
-    entities: { type: "manicure appointment" },
-  },
-  "meeting with friends": {
-    intent: "None",
-    entities: { type: "meeting with friends" },
-  },
-  "dinner with parents": {
-    intent: "None",
-    entities: { type: "dinner with parents" },
-  },
-  "date at the cinema": {
-    intent: "None",
-    entities: { type: "date at the cinema" },
-  },
-  "on friday": {
-    intent: "None",
-    entities: { day: "Friday" },
-  },
-  "on monday": {
-    intent: "None",
-    entities: { day: "Monday" },
-  },
-  "on tuesday": {
-    intent: "None",
-    entities: { day: "Tuesday" },
-  },
-  "on wednesday": {
-    intent: "None",
-    entities: { day: "Wednesday" },
-  },
-  "on thursday": {
-    intent: "None",
-    entities: { day: "Thursday" },
-  },
-  "on saturday": {
-    intent: "None",
-    entities: { day: "Saturday" },
-  },
-  "on sunday": {
-    intent: "None",
-    entities: { day: "Sunday" },
-  },
-  "at 9": {
-    intent: "None",
-    entities: { hour: "9" },
-  },
-  "at 10": {
-    intent: "None",
-    entities: { hour: "10" },
-  },
-  "at 1": {
-    intent: "None",
-    entities: { hour: "1" },
-  },
-  "at 2": {
-    intent: "None",
-    entities: { hour: "2" },
-  },
-  "at 3": {
-    intent: "None",
-    entities: { hour: "3" },
-  },
-  "at 4": {
-    intent: "None",
-    entities: { hour: "4" },
-  },
-  "at 5": {
-    intent: "None",
-    entities: { hour: "5" },
-  },
-  "at 6": {
-    intent: "None",
-    entities: { hour: "6" },
-  },
-  "at 7": {
-    intent: "None",
-    entities: { hour: "7" },
-  },
-  "at 8": {
-    intent: "None",
-    entities: { hour: "8" },
-  },
-  "at 11": {
-    intent: "None",
-    entities: { hour: "11" },
-  },
-  "at 12": {
-    intent: "None",
-    entities: { hour: "12" },
-  },
-  "yes": {
-    intent: "None",
-    entities: {binary_yes: "Let's proceed."}  
-  },
-  "yes please": {
-    intent: "None",
-    entities: {binary_yes: "Let's proceed."}  
-  },
-  "no thank you": {
-    intent: "None",
-    entities: {binary_yes: "Let's proceed."}  
-  },
-  "no" : {
-    intent: "None",
-    entities: {binary_no: "Let's go back."}
-  },
-  "create a meeting" : {
-    intent: "None",
-    entities: {create_meeting: "create a meeting"}
-  },
-  "I want to create a meeting" : {
-    intent: "None",
-    entities: {create_meeting: "create a meeting"}
-  },
-  "who is ashley tisdale" : {
-    intent: "None",
-    entities: {type: "meeting with Ashley Tisdale"}
-  },
-  "who is vanessa hudgens" : {
-    intent: "None",
-    entities: {type: "meeting with Vanessa Hudgens"}
-  },
-  "who is zac efron" : {
-    intent: "None",
-    entities: {type: "meeting with Zac Efron"}
-  },
-  "ask a celebrity question" : {
-    intent: "None",
-    entities: {type: "meeting with Zac Efron"}
-  },
-  "meeting with Zac Efron" : {
-    intent: "None",
-    entities: {type: "meeting with Zac Efron"}
-  },
-  "meeting with Ashley Tisdale" : {
-    intent: "None",
-    entities: {type: "meeting with Ashley Tisdale"},
-  },
-  "meeting with Vanessa Hudgens" : {
-    intent: "None",
-    entities: {type: "meeting with Vanessa Hudgens"},
-  },
+const getEntity = (context: SDSContext, entity: string) => {
+  console.log("nluResult");
+  console.log(context.nluResult);
+  // lowercase the utterance and remove tailing "."
+      return context.nluResult.prediction.intents[0].category;
 };
 
-const getEntity = (context: SDSContext, entity: string) => {
+const getText = (context: SDSContext, entity: string) => {
+  console.log("nluResult");
+  console.log(context.nluResult);
   // lowercase the utterance and remove tailing "."
-  let u = context.recResult[0].utterance.toLowerCase().replace(/.$/g, "");
-  if (u in grammar) {
-    if (entity in grammar[u].entities) {
-      return grammar[u].entities[entity];
-    }
-  }
-  return false;
+      return context.nluResult.prediction.entities[0].text;
 };
 
 export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
@@ -208,17 +39,11 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         RECOGNISED: [
           {
             target: "welcome",
-            cond: (context) => !!getEntity(context, "create_meeting"),
-            actions: assign({
-              type: (context) => getEntity(context, "create_meeting"),
-            }),
+            cond: (context) => getEntity(context) === "create a meeting",
           },
           {
             target: "celebrity_info",
-            cond: (context) => !!getEntity(context, "type"),
-            actions: assign({
-              type: (context) => getEntity(context, "type"),
-            }),
+            cond: (context) => getEntity(context) === "who is x",
           },
           {
             target: ".nomatch",
@@ -228,7 +53,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
       },
       states: {
         prompt: {
-          entry: say("Hi Anika. Would you like to create a meeting or ask a celebrity question? Answer either: create a meeting - or - ask a celebrity question."),
+          entry: say("Hi Anika. Would you like to create a meeting or ask a celebrity question?"),
           on: { ENDSPEECH: "ask" },
         },
         ask: {
@@ -248,9 +73,9 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         RECOGNISED: [
           {
             target: "info",
-            cond: (context) => !!getEntity(context, "type"),
+            cond: (context) => getEntity(context) === "appointment type",
             actions: assign({
-              type: (context) => getEntity(context, "type"),
+              type: (context) => getText(context, "type"),
             }),
           },
           {
@@ -354,17 +179,11 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
           RECOGNISED: [
             {
               target: "assign_meeting_title",
-              cond: (context) => !!getEntity(context, "binary_yes"),
-              actions: assign({
-                title: (context) => getEntity(context, "binary_yes"),
-              }),
+              cond: (context) => getEntity(context) === "positive",
             },
             {
               target: "hello",
-              cond: (context) => !!getEntity(context, "binary_no"),
-              actions: assign({
-                title: (context) => getEntity(context, "binary_no"),
-              }),
+              cond: (context) => getEntity(context) === "negative",
             },
             {
               target: ".nomatch",
@@ -401,9 +220,9 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         RECOGNISED: [
           {
             target: "day_info",
-            cond: (context) => !!getEntity(context, "day"),
+            cond: (context) => getEntity(context) === "date time",
             actions: assign({
-              day: (context) => getEntity(context, "day"),
+              day: (context) => getText(context, "day"),
             }),
           },
           {
@@ -441,17 +260,11 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         RECOGNISED: [
           {
             target: "whole_day_yes",
-            cond: (context) => !!getEntity(context, "binary_yes"),
-            actions: assign({
-              title: (context) => getEntity(context, "binary_yes"),
-            }),
+            cond: (context) => getEntity(context) === "positive",
           },
           {
             target: "whole_day_no",
-            cond: (context) => !!getEntity(context, "binary_no"),
-            actions: assign({
-              title: (context) => getEntity(context, "binary_no"),
-            }),
+            cond: (context) => getEntity(context) === "negative",
           },
           {
             target: ".nomatch",
@@ -475,22 +288,15 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         },
       },
     },
-    whole_day_yes: {
-      entry: send((context) => ({
-        type: "SPEAK",
-        value: `OK, do you want me to create a meeting titled ${context.type} on ${context.day} for the whole day?`,
-      })),
-      on: { ENDSPEECH: "created_meeting" },
-    },
     whole_day_no: {
       initial: "prompt",
       on: {
         RECOGNISED: [
           {
             target: "meeting_time",
-            cond: (context) => !!getEntity(context, "hour"),
+            cond: (context) => getEntity(context) === "time",
             actions: assign({
-              hour: (context) => getEntity(context, "hour"),
+              hour: (context) => getText(context, "hour"),
             }),
           },
           {
@@ -516,29 +322,16 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
       },
     },
     meeting_time: {
-      entry: send((context) => ({
-        type: "SPEAK",
-        value: `OK, do you want me to create a meeting titled ${context.type} on ${context.day} at ${context.hour}`,
-      })),
-      on: { ENDSPEECH: "created_meeting" },
-    },
-    created_meeting: {
-      initial: "ask",
+      initial: "prompt",
       on: {
         RECOGNISED: [
           {
             target: "success",
-            cond: (context) => !!getEntity(context, "binary_yes"),
-            actions: assign({
-              title: (context) => getEntity(context, "binary_yes"),
-            }),
+            cond: (context) => getEntity(context) === "positive",
           },
           {
             target: "welcome",
-            cond: (context) => !!getEntity(context, "binary_no"),
-            actions: assign({
-              title: (context) => getEntity(context, "binary_no"),
-            }),
+            cond: (context) => getEntity(context) === "negative",
           },
           {
             target: ".nomatch",
@@ -548,7 +341,47 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
       },
       states: {
         prompt: {
-          entry: say("This is a test"),
+          entry: send((context) => ({
+            type: "SPEAK",
+            value: `OK, do you want me to create a meeting titled ${context.type} on ${context.day} at ${context.hour}?`,
+          })),
+          on: { ENDSPEECH: "ask" },
+        },
+        ask: {
+          entry: send("LISTEN"),
+        },
+        nomatch: {
+          entry: say(
+            "Sorry, I don't know what it is. Tell me something I know."
+          ),
+          on: { ENDSPEECH: "ask" },
+        },
+      },
+    },
+    whole_day_yes: {
+      initial: "prompt",
+      on: {
+        RECOGNISED: [
+          {
+            target: "success",
+            cond: (context) => getEntity(context) === "positive",
+          },
+          {
+            target: "welcome",
+            cond: (context) => getEntity(context) === "negative",
+          },
+          {
+            target: ".nomatch",
+          },
+        ],
+        TIMEOUT: ".prompt",
+      },
+      states: {
+        prompt: {
+          entry: send((context) => ({
+            type: "SPEAK",
+            value: `OK, do you want me to create a meeting titled ${context.type} on ${context.day} for the whole day?`,
+          })),
           on: { ENDSPEECH: "ask" },
         },
         ask: {
