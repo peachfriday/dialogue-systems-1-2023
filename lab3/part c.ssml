@@ -1,0 +1,24 @@
+<!--ID=B7267351-473F-409D-9765-754A8EBCDE05;Version=1|{"VoiceNameToIdMapItems":[{"Id":"22bb63f1-7dba-49b9-9d4d-b56c7ce92d47","Name":"Microsoft Server Speech Text to Speech Voice (en-US, EricNeural)","ShortName":"en-US-EricNeural","Locale":"en-US","VoiceType":"StandardVoice"}]}-->
+<!--ID=FCB40C2B-1F9F-4C26-B1A1-CF8E67BE07D1;Version=1|{"Files":{}}-->
+<!--ID=5B95B1CC-2C7B-494F-B746-CF22A0E779B7;Version=1|{"Locales":{"en-US":{"AutoApplyCustomLexiconFiles":[{}]}}}-->
+<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="en-US"><voice name="en-US-EricNeural"><prosody rate="-10.00%">The Bull.</prosody>
+<prosody rate="-25.00%">He </prosody>stood alone in <prosody contour="(15%, +37%) (99%, -50%)">the backyard</prosody>. So <prosody rate="-30.00%">dark</prosody>, the night <prosody rate="-30.00%">purpled </prosody><prosody contour="(46%, +39%)">around </prosody>him...
+<prosody contour="(48%, -29%)">I</prosody><prosody rate="-40.00%" contour="(47%, +35%)"> had </prosody>no <prosody rate="-15.00%" contour="(78%, -52%)">choice</prosody>.
+<prosody rate="-7.00%" contour="(29%, +14%) (85%, -21%)">I opened the door</prosody><prosody rate="-7.00%"> and stepped out - </prosody><prosody rate="-7.00%" contour="(49%, +33%)">wind</prosody><prosody rate="-7.00%"> in the branches.</prosody>
+He <prosody rate="-30.00%">watched</prosody> me with <prosody rate="-20.00%">karosene blue</prosody><prosody contour="(89%, +41%)"> eyes</prosody>.
+<prosody rate="-10.00%" contour="(11%, +24%) (32%, -15%) (53%, +23%) (89%, +11%)">What do you want?</prosody>
+<prosody rate="-6.00%">I asked</prosody>, forgetting I had <prosody rate="-15.00%">no language.</prosody>
+He kept <prosody rate="-15.00%" pitch="+20.00%">breathing</prosody>, to stay <prosody rate="-15.00%" pitch="+20.00%">alive</prosody><prosody rate="-15.00%">.</prosody>
+I was a <prosody rate="-20.00%">boy</prosody> - which meant I was a <prosody rate="-20.00%">murderer</prosody> of my <prosody rate="-20.00%">childhood</prosody>, and like all murderers, my God was stillness, my God, he was still there.
+Like something <prosody rate="-13.00%">prayed for..</prosody>. <prosody rate="-10.00%" contour="(4%, -22%) (29%, +29%) (60%, +35%) (100%, -17%)">By</prosody><prosody contour="(4%, -22%) (29%, +29%) (60%, +35%) (100%, -17%)"> a man with no mouth...</prosody>
+The <prosody rate="-10.00%">green-blue lamp</prosody><prosody contour="(47%, +24%)"> swirled</prosody> in its <prosody rate="-12.00%" contour="(50%, +24%)">socket.</prosody>
+<prosody contour="(58%, +27%) (88%, -26%)">I didn't want </prosody><prosody rate="-30.00%" pitch="-30.00%" contour="(58%, +27%) (88%, -26%)">him...</prosody>
+I didn't want <prosody rate="-30.00%">him</prosody>... to be <prosody pitch="-20.00%">beautiful.</prosody>
+<prosody rate="-20.00%">But</prosody><prosody contour="(47%, +24%)"> needing</prosody><prosody contour="(48%, +24%)"> beauty</prosody>. To be more <prosody pitch="-20.00%">hurt gentle enough</prosody> to want...
+<prosody contour="(26%, +20%) (75%, -35%) (98%, -26%)">I reached for him.</prosody>
+<prosody rate="-10.00%" contour="(8%, +33%) (73%, -42%)">I reached...</prosody>
+Not the <prosody contour="(49%, +23%)">bull</prosody>... but the <prosody contour="(49%, +25%)">depths.</prosody>
+<prosody rate="-20.00%">Not</prosody> an <prosody rate="+20.00%" pitch="+20.00%" contour="(48%, +32%)">answer</prosody>... but an <prosody rate="-20.00%" pitch="+20.00%" contour="(49%, +33%)">entrance</prosody>...
+The <prosody rate="-10.00%" contour="(48%, +23%)">shape</prosody> of an <prosody rate="-10.00%" contour="(47%, +20%)">animal</prosody>.
+<prosody rate="-25.00%">Like </prosody><prosody rate="-25.00%" contour="(48%, +24%)">me</prosody><prosody rate="-25.00%">.</prosody>
+<prosody contour="(11%, +29%) (82%, -46%)"></prosody></voice></speak>
