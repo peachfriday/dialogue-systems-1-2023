@@ -35,6 +35,7 @@ interface ChatInput {
 }
 
 interface SDSContext {
+  justsaid: any;
   parameters: Parameters;
   asr: SpeechRecognition;
   tts: SpeechSynthesis;
@@ -56,6 +57,20 @@ interface SDSContext {
   title: any;
   topic: string;
   topic: string;
+  justsaid: any;
+  count: number;
+  saidday: any;
+  saidappointment: any;
+  saidhour: any;
+  count2: number;
+  count3: number;
+  count4: number;
+  count5: number;
+  count6: number;
+  count7: number;
+  count8: number;
+  count9: number;
+  count10: number;
 }
 
 type SDSEvent =
@@ -69,4 +84,5 @@ type SDSEvent =
   | { type: "ENDSPEECH" }
   | { type: "LISTEN" }
   | { type: "TIMEOUT" }
+  | { type: "NOINPUT" }
   | { type: "SPEAK"; value: string };
