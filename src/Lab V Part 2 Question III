@@ -1,0 +1,37 @@
+For NLU, I would have to edit my getEntity2 function, as confidenceScore in this case is stored somewhere else.
+
+const getEntity2 = (context: SDSContext, entity: string) => {
+  // lowercase the utterance and remove tailing "."
+  let threshold = 0.80
+  if (threshold < context.nluResult.prediction.intents[0].confidenceScore) {
+      context.nluResult.prediction.intents[0];
+    }
+  }
+} else {
+  return false;
+}
+};
+
+This function states that, if the confidence score is lower than 0.80, the function returns false.
+
+Next, in my code I could proceed like I did in my original code. This is for example, the hello block. I am assigning what the user said to 'justsaid'
+
+{
+  target: ".meant",
+  cond: (context) => getEntity2(context) === false,
+  actions: assign({
+    justsaid:(context: { recResult: { utterance: any; }[]; }) => context.recResult[0].utterance,
+  }),
+},
+
+Then in my states I would have the following state.
+
+meant: {
+  entry: send((context) => ({
+    type: "SPEAK",
+    value: `Did you mean ${context.justsaid}`,
+  })),
+  on: { ENDSPEECH: "ask" },
+},
+
+If the user answers 'Yes', they will proceed to the next block.
