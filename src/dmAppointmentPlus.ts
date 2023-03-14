@@ -75,6 +75,30 @@ const grammar: Grammar = {
     intent: "None",
     entities: { day: "Sunday" },
   },
+  "friday": {
+    intent: "None",
+    entities: { day: "Friday" },
+  },
+  "monday": {
+    intent: "None",
+    entities: { day: "Monday" },
+  },
+  "wednesday": {
+    intent: "None",
+    entities: { day: "wednesday" },
+  },
+  "thursday": {
+    intent: "None",
+    entities: { day: "thursday" },
+  },
+  "saturday": {
+    intent: "None",
+    entities: { day: "saturday" },
+  },
+  "sunday": {
+    intent: "None",
+    entities: { day: "Sunday" },
+  },
   "at 9": {
     intent: "None",
     entities: { hour: "9" },
@@ -94,6 +118,34 @@ const grammar: Grammar = {
   "at 3": {
     intent: "None",
     entities: { hour: "3" },
+  },
+  "3": {
+    intent: "None",
+    entities: { hour: "3" },
+  },
+  "6": {
+    intent: "None",
+    entities: { hour: "6" },
+  },
+  "7": {
+    intent: "None",
+    entities: { hour: "7" },
+  },
+  "8": {
+    intent: "None",
+    entities: { hour: "8" },
+  },
+  "9": {
+    intent: "None",
+    entities: { hour: "9" },
+  },
+  "10": {
+    intent: "None",
+    entities: { hour: "10" },
+  },
+  "11": {
+    intent: "None",
+    entities: { hour: "11" },
   },
   "at 4": {
     intent: "None",
@@ -202,7 +254,7 @@ const getHelp = (context: SDSContext, entity: string) => {
 const getEntity2 = (context: SDSContext, entity: string) => {
   // lowercase the utterance and remove tailing "."
   let u = context.recResult[0].utterance.toLowerCase().replace(/.$/g, "");
-  let threshold = 0.80
+  let threshold = 0.99
   if (threshold < context.recResult[0].confidence) {
   if (u in grammar) {
     if (entity in grammar[u].entities) {
@@ -262,7 +314,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
             cond: (context) => !!getEntity(context, "binary_yes") && (context.justsaid) === 'Create a meeting.'
           },
           {
-            target: "#hello",
+            target: "#hello.prompt.p1.prompt",
             cond: (context) => !!getEntity(context, "binary_no"),
           },
           {
@@ -389,7 +441,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
       },
         help_message: {
           entry: say("You are being returned to the previous block."),
-          on: { ENDSPEECH: "prompt" },
+          on: { ENDSPEECH: "#hello.prompt.p1.prompt" },
         },
         meant: {
           entry: send((context) => ({
@@ -430,7 +482,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
             cond: (context) => !!getEntity(context, "binary_yes"),
           },
           {
-            target: "#welcome",
+            target: "#welcome.prompt.p1.prompt",
             cond: (context) => !!getEntity(context, "binary_no"),
           },
           {
@@ -562,7 +614,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
       },
         help_message: {
           entry: say("You are being returned to the previous block."),
-          on: { ENDSPEECH: "#hello" },
+          on: { ENDSPEECH: "#hello.prompt.p1.prompt" },
         },
         meant: {
           entry: send((context) => ({
@@ -596,7 +648,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
           RECOGNISED: [
             {
               target: ".information",
-              actions: assign({type:
+              actions: assign({justsaid:
                 context => {return context.recResult[0].utterance},
               }),
             },
@@ -609,7 +661,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
               cond: (context) => !!getEntity(context, "binary_yes"),
             },
             {
-              target: "#celebrity_info",
+              target: "#celebrity_info.prompt.p1.prompt",
               cond: (context) => !!getEntity(context, "binary_no"),
             },
             {
@@ -629,11 +681,11 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
           information: {
             invoke: {
               id: 'getInformation',
-              src: (context, event) => kbRequest(context.type),
+              src: (context, event) => kbRequest(context.justsaid),
               onDone: [{
                 target: 'success',
                 cond: (context, event) => event.data.Abstract !== "",
-                actions: assign({ information: (context, event) => event.data })
+                actions: assign({ justsaid: (context, event) => event.data })
               },
               {
                 target: 'failure',
@@ -647,7 +699,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
           success: {
             entry: send((context) => ({
               type: "SPEAK",
-              value: `Here's what I found: ${context.information.Abstract}`
+              value: `Here's what I found: ${context.justsaid.Abstract}`
             })),
             on: {ENDSPEECH: "#want_meet"},
           },
@@ -768,7 +820,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
           },
           help_message: {
             entry: say("You are being returned to the previous block."),
-            on: { ENDSPEECH: "#celebrity_info" },
+            on: { ENDSPEECH: "#celebrity_info.prompt.p1.prompt" },
           },
           meant: {
             entry: send((context) => ({
@@ -794,7 +846,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         on: {
           RECOGNISED: [
             {
-              target: "assign_meeting_title",
+              target: "#assign_meeting",
               cond: (context) => !!getEntity(context, "binary_yes"),
               actions: assign({
                 title: (context) => getEntity(context, "binary_yes"),
@@ -807,15 +859,8 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
                 title: (context) => getEntity(context, "binary_no"),
               }),
             },
-            {
-              target: ".meant",
-              cond: (context) => getEntity2(context) === false,
-              actions: assign({
-                justsaid:(context: { recResult: { utterance: any; }[]; }) => context.recResult[0].utterance,
-              }),
-            },
           {
-            target: "assign_meeting_title",
+            target: "date_info_celeb",
             cond: (context) => !!getEntity(context, "binary_yes") && (context.justsaid) === 'Yes.'
           },
           {
@@ -943,7 +988,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         },
           help_message: {
             entry: say("You are being returned to the previous block."),
-            on: { ENDSPEECH: "#celebrity_info" },
+            on: { ENDSPEECH: "#celebrity_info.prompt.p1.prompt" },
           },
           meant: {
             entry: send((context) => ({
@@ -964,14 +1009,15 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         },
       },
     assign_meeting_title: {
+      id: "assign_meeting",
       entry: [
         say("Okay."),
-        assign((context) => ({type: `meeting with ${context.type}`}))
+        assign((context) => ({type: `${context.justsaid.Heading}`}))
       ],
       on: { ENDSPEECH: "date_info_celeb" },
       },
     date_info_celeb: {
-        id: "date_info",
+        id: "date_info_celeb",
         initial: "prompt",
         on: {
           RECOGNISED: [
@@ -987,11 +1033,11 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
               cond: (context) => getHelp(context) === "help",
             },
             {
-            target: "day_info",
+            target: "day_info_meant",
             cond: (context) => !!getEntity(context, "binary_yes"),
           },
           {
-            target: "#date_info",
+            target: "#date_info_celeb",
             cond: (context) => !!getEntity(context, "binary_no"),
           },
           {
@@ -1118,7 +1164,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         },
           help_message: {
             entry: say("You are being returned to the previous block."),
-            on: { ENDSPEECH: "#want_meet" },
+            on: { ENDSPEECH: "#want_meet.prompt.p1.prompt" },
           },
           meant: {
             entry: send((context) => ({
@@ -1155,11 +1201,11 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
             cond: (context) => getHelp(context) === "help",
           },
           {
-            target: "day_info",
+            target: "day_info_meant",
             cond: (context) => !!getEntity(context, "binary_yes"),
           },
           {
-            target: "#date_info",
+            target: "#date_info.prompt.p1.prompt",
             cond: (context) => !!getEntity(context, "binary_no"),
           },
           {
@@ -1286,7 +1332,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
       },
         help_message: {
           entry: say("You are being returned to the previous block."),
-          on: { ENDSPEECH: "#welcome" },
+          on: { ENDSPEECH: "#welcome.prompt.p1.prompt" },
         },
         meant: {
           entry: send((context) => ({
@@ -1309,10 +1355,17 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
     day_info: {
       entry: send((context) => ({
         type: "SPEAK",
-        value: `OK, ${context.saidday}`,
+        value: `OK, ${context.day}`,
       })),
-      on: { ENDSPEECH: "duration_info" },
+      on: { ENDSPEECH: "#duration_info.prompt.p1.prompt" },
     },
+    day_info_meant: {
+      entry: [
+        say("Okay"),
+        assign((context) => ({type: `${context.day}`}))
+      ],
+      on: { ENDSPEECH: "#duration_info.prompt.p1.prompt" },
+      },
     duration_info: {
       id: "duration_info",
       initial: "prompt",
@@ -1335,13 +1388,6 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
           {
             target: ".help_message",
             cond: (context) => getHelp(context) === "help",
-          },
-          {
-            target: ".meant",
-            cond: (context) => getEntity2(context) === false,
-            actions: assign({
-              justsaid:(context: { recResult: { utterance: any; }[]; }) => context.recResult[0].utterance,
-            }),
           },
           {
             target: "whole_day_yes",
@@ -1468,7 +1514,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
       },
         help_message: {
           entry: say("You are being returned to the previous block."),
-          on: { ENDSPEECH: "#date_info" },
+          on: { ENDSPEECH: "#date_info.prompt.p1.prompt" },
         },
         meant: {
           entry: send((context) => ({
@@ -1500,7 +1546,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
             }),
           },
           {
-            target: "hello",
+            target: "#hello.prompt.p1.prompt",
             cond: (context) => !!getEntity(context, "binary_no"),
             actions: assign({
               title: (context) => getEntity(context, "binary_no"),
@@ -1627,7 +1673,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
       },
         help_message: {
           entry: say("You are being returned to the previous block."),
-          on: { ENDSPEECH: "#duration_info" },
+          on: { ENDSPEECH: "#duration_info.prompt.p1.prompt" },
         },
         meant: {
           entry: send((context) => ({
@@ -1664,7 +1710,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
             cond: (context) => !!getEntity(context, "binary_yes"),
           },
           {
-            target: "#whole_day_no",
+            target: "#whole_day_no.prompt.p1.prompt",
             cond: (context) => !!getEntity(context, "binary_no"),
           },
           {
@@ -1795,7 +1841,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
       },
         help_message: {
           entry: say("You are being returned to the previous block."),
-          on: { ENDSPEECH: "#duration_info" },
+          on: { ENDSPEECH: "#duration_info.prompt.p1.prompt" },
         },
         meant: {
           entry: send((context) => ({
@@ -1828,7 +1874,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
             }),
           },
           {
-            target: "hello",
+            target: "#hello.prompt.p1.prompt",
             cond: (context) => !!getEntity(context, "binary_no"),
             actions: assign({
               title: (context) => getEntity(context, "binary_no"),
@@ -1955,7 +2001,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
       },
         help_message: {
           entry: say("You are being returned to the previous block."),
-          on: { ENDSPEECH: "#whole_day_no" },
+          on: { ENDSPEECH: "#whole_day_no.prompt.p1.prompt" },
         },
         meant: {
           entry: send((context) => ({
