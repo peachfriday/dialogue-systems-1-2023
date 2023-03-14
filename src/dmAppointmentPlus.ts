@@ -254,7 +254,7 @@ const getHelp = (context: SDSContext, entity: string) => {
 const getEntity2 = (context: SDSContext, entity: string) => {
   // lowercase the utterance and remove tailing "."
   let u = context.recResult[0].utterance.toLowerCase().replace(/.$/g, "");
-  let threshold = 0.99
+  let threshold = 0.80
   if (threshold < context.recResult[0].confidence) {
   if (u in grammar) {
     if (entity in grammar[u].entities) {
