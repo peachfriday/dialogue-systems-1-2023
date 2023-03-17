@@ -10,6 +10,17 @@ let listOfUsedWords: string[] = []
 const findWord = (context: SDSContext, entity: string) => {
   // lowercase the utterance and remove tailing "."
   let u = context.recResult[0].utterance.toLowerCase().replace(/\.$/g, "");
+  if (u.split(' ').length > 1) {
+    return "You breached the rules of the game. You lose!";
+  }
+  if (listOfUsedWords.length > 0) {
+    let lastWord = listOfUsedWords[listOfUsedWords.length - 1];
+  let lastLetter = lastWord[lastWord.length - 1];
+  let firstLetter = u[0];
+  if (firstLetter !== lastLetter) {
+    return "You breached the rules of the game. You lose!";
+  }
+};
   listOfUsedWords.push(u)
   console.log(listOfUsedWords)
   let psi = u.substr(u.length - 1) // the last letter of the word provided by user
@@ -64,7 +75,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
       },
       states: {
         prompt: {
-          entry: say("Hello, welcome to the Word Chain Game. The rules are simple - you give me a word and I respond with a word that starts with the last letter of your word. And then you do the same! The starting word is: lunch"),
+          entry: say("Hello, welcome to the Word Chain Game. The rules are simple - you give me a word and I respond with a word that starts with the last letter of your word. And then you do the same! You start."),
           on: { ENDSPEECH: "ask" },
         },
         ask: {
@@ -99,7 +110,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         prompt: {
           entry: send((context) => ({
             type: "SPEAK",
-            value: `The word is: ${context.title}`,
+            value: `${context.title}`,
           })),
           on: { ENDSPEECH: "ask" },
         },
@@ -135,7 +146,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         prompt: {
           entry: send((context) => ({
             type: "SPEAK",
-            value: `The word is: ${context.title}`,
+            value: `${context.title}`,
           })),
           on: { ENDSPEECH: "ask" },
         },
