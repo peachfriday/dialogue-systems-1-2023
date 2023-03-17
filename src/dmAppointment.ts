@@ -5,51 +5,13 @@ function say(text: string): Action<SDSContext, SDSEvent> {
   return send((_context: SDSContext) => ({ type: "SPEAK", value: text }));
 }
 
-interface Grammar {
-  [index: string]: {
-    intent: string;
-    entities: {
-      [index: string]: string;
-    };
-  };
-}
-
-const grammar: Grammar = {
-  lecture: {
-    intent: "None",
-    entities: { title: "Dialogue systems lecture" },
-  },
-  lunch: {
-    intent: "None",
-    entities: { title: "Lunch at the canteen" },
-  },
-  "on friday": {
-    intent: "None",
-    entities: { day: "Friday" },
-  },
-  "at ten": {
-    intent: "None",
-    entities: { time: "10:00" },
-  },
-};
-
-const getEntity = (context: SDSContext, entity: string) => {
-  // lowercase the utterance and remove tailing "."
-  let u = context.recResult[0].utterance.toLowerCase().replace(/\.$/g, "");
-  if (u in grammar) {
-    if (entity in grammar[u].entities) {
-      return grammar[u].entities[entity];
-    }
-  }
-  return false;
-};
-
 let listOfUsedWords: string[] = []
 
 const findWord = (context: SDSContext, entity: string) => {
   // lowercase the utterance and remove tailing "."
   let u = context.recResult[0].utterance.toLowerCase().replace(/\.$/g, "");
   listOfUsedWords.push(u)
+  console.log(listOfUsedWords)
   let psi = u.substr(u.length - 1) // the last letter of the word provided by user
   let siupsiup = LEMMAS.filter((k) => k[0] === psi) // retrieves words from lemmas that start with the letter in psi
   const randIndex = Math.floor(Math.random() * siupsiup.length); // gives a random index among the retrieved words
@@ -90,7 +52,6 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         RECOGNISED: [
           {
             target: "giveword",
-            cond: (context) => !!findWord(context, "title"),
             actions: assign({
               title: (context) => findWord(context, "title"),
             }),
@@ -124,7 +85,6 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         RECOGNISED: [
           {
             target: "giveword2",
-            cond: (context) => !!findWord(context, "title"),
             actions: assign({
               title: (context) => findWord(context, "title"),
             }),
@@ -161,7 +121,6 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
         RECOGNISED: [
           {
             target: "giveword",
-            cond: (context) => !!findWord(context, "title"),
             actions: assign({
               title: (context) => findWord(context, "title"),
             }),
@@ -193,10 +152,3 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
     },
   },
 };
-
-const kbRequest = (text: string) =>
-  fetch(
-    new Request(
-      `https://cors.eu.org/https://api.duckduckgo.com/?q=${text}&format=json&skip_disambig=1`
-    )
-  ).then((data) => data.json());
